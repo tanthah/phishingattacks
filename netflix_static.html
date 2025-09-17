@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Netflix Việt Nam - Xem phim trực tuyến</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* (Chèn toàn bộ CSS bạn đã có ở đây — mình giữ nguyên style cũ) */
+        :root {
+            --red: #e50914;
+            --dark-red: #b20710;
+            --black: #141414;
+            --gray: #8c8c8c;
+            --light-gray: #e5e5e5;
+            --white: #ffffff;
+        }
+        * { 
+            margin:0; 
+            padding:0; 
+            box-sizing:border-box; 
+            font-family:'Helvetica Neue', Arial, sans-serif; 
+        }
+        body { 
+            background-color:var(--black); 
+            color:var(--white); 
+            line-height:1.4; 
+            overflow-x:hidden; 
+        }
+        .btn { 
+            background-color:var(--red); 
+            color:var(--white); 
+            border:none;
+             border-radius:4px; 
+             padding:8px 16px; 
+             font-size:1rem; 
+             cursor:pointer; 
+             transition:all .3s; 
+        }
+        .btn:hover { 
+            background-color:#f40612; 
+        }
+        .netflix-bg { 
+            width:100%;
+            height:100vh; 
+        }
+        .header { 
+            position:fixed; 
+            top:0; left:0; 
+            width:100%; 
+            display:flex; 
+            justify-content:space-between; 
+            align-items:center; 
+            padding:20px 4%; 
+            z-index:1000; 
+            transition:all .3s; 
+            background:linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%); 
+        }
+        .header.scrolled { 
+            background: rgba(20,20,20,0.9); 
+            box-shadow:0 1px 10px rgba(0,0,0,0.5); 
+            backdrop-filter: blur(10px); 
+        }
+        .logo img { 
+            height:40px; 
+            width:auto; 
+        }
+        .nav-right { 
+            display:flex; 
+            align-items:center; 
+            gap:20px; 
+        }
+        .language-selector { 
+            background: rgba(0,0,0,0.4); 
+            color:white; 
+            padding:8px 15px; 
+            border-radius:4px; 
+            font-size:14px; 
+            cursor:pointer; 
+        }
+        .sign-in-btn { 
+            background:var(--red); 
+            color:var(--white); 
+            border:none; 
+            padding:8px 17px; 
+            border-radius:4px; 
+            font-size:14px; 
+            font-weight:500; 
+            cursor:pointer; 
+        }
+        .hero { 
+            height:100vh; 
+            display:flex; 
+            align-items:center; 
+            justify-content:center; 
+            text-align:center; 
+            position:relative; 
+            padding:0 20px; 
+            z-index:1; 
+            background: url("image/background.jpg") center/cover no-repeat;
+        }
+        .hero::before { 
+            content:''; 
+            position:absolute; 
+            top:0; 
+            left:0; 
+            right:0; 
+            bottom:0; 
+            background:linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.8) 100%); 
+            z-index:-1; 
+        }
+        .hero-content { 
+            position:relative; 
+            z-index:2; 
+            max-width:950px; 
+            margin:0 auto; 
+            padding:75px 20px; 
+            animation:fadeIn 1s ease-in; 
+            text-align:center; 
+            width:100%; 
+            overflow: hidden;
+        }
+        @keyframes fadeIn { 
+            from{
+                opacity:0; 
+                transform:translateY(20px)
+            } to{
+                opacity:1; 
+                transform:translateY(0)
+            } 
+        }
+        .hero h1 { 
+            font-size:3.125rem; 
+            font-weight:900; 
+            margin:0 auto 20px; 
+            max-width:800px; 
+            line-height:1.1; 
+            text-shadow:2px 2px 4px rgba(110,99,99,.5); 
+            padding:0 20px; 
+        }
+        .hero h2 { 
+            font-size:1.625rem; 
+            font-weight:400; 
+            margin:0 auto 20px; 
+            text-shadow:2px 2px 4px rgba(0,0,0,.5); 
+        }
+        .hero p { 
+            font-size:1.5rem; 
+            margin:0 auto 20px; 
+            max-width:640px; 
+            text-shadow:1px 1px 2px rgba(0,0,0,.7); 
+            padding:0 20px; line-height:1.4; 
+        }
+        .email-form { 
+            display:flex; 
+            max-width:670px; 
+            margin:20px auto 0; 
+            gap:10px; align-items:stretch; 
+        }
+        .email-input { 
+            flex:1; 
+            padding:15px 20px; 
+            font-size:16px; 
+            border:1px solid var(--gray); 
+            border-radius:4px; 
+            min-height:60px; 
+            background:rgba(0,0,0,.7); 
+            color:var(--white); 
+            outline:none; 
+            min-width:300px; 
+            max-width:450px; 
+        }
+        .email-button { 
+            background:var(--red); 
+            color:var(--white); 
+            border:none; 
+            border-radius:4px; 
+            font-size:1.5rem; 
+            font-weight:500; 
+            padding:0 1.5em; 
+            cursor:pointer;
+            min-width:150px; 
+            display:flex; 
+            align-items:center; 
+            justify-content:center; 
+        }
+        .trending { 
+            padding:40px 4%;
+            background-color:#000; 
+            text-align:center; 
+        }
+        .trending-list { 
+            display:flex; 
+            justify-content:center; 
+            gap:20px; 
+            flex-wrap:wrap; 
+        }
+        .trending-item { 
+            position:relative; 
+            width:200px; 
+        }
+        .trending-item img {
+            width:100%; 
+            border-radius:6px; 
+            display:block; 
+            transition:transform .3s ease, box-shadow .3s ease; 
+        }
+        .trending-item:hover img { 
+            transform:scale(1.08); 
+            box-shadow:0 8px 20px rgba(0,0,0,.6); 
+        }
+        .trending-item .number { 
+            position:absolute; 
+            bottom:10px; 
+            left:10px; 
+            font-size:3rem; 
+            font-weight:bold; 
+            color:white; 
+            text-shadow:2px 2px 5px rgba(0,0,0,.8); 
+        }
+        .features { 
+            padding:70px 45px; 
+            border-top:8px solid #222; 
+            background-color:#000; 
+            color:white; 
+        }
+        .feature { 
+            display:flex; 
+            align-items:center; 
+            justify-content:space-between; 
+            max-width:1100px; 
+            margin:0 auto; 
+            padding:50px 0; 
+        }
+        .feature-text { 
+            flex:0 1 52%; 
+            padding:0 3rem 0 0;
+        }
+        .feature h2 { 
+            font-size:3rem; 
+            margin-bottom:1rem; 
+            line-height:1.1; 
+        }
+        .feature p { 
+            font-size:1.5rem; 
+            margin:1rem 0 0;
+        }
+        .feature-media { 
+            position:relative; 
+            flex:0 1 48%; 
+        }
+        .faq { 
+            padding:70px 45px; 
+            background-color:#000; 
+            color:white; border-top:8px solid #222; 
+        }
+        .faq h2 { 
+            font-size:3rem; 
+            text-align:center; 
+            margin-bottom:2rem;
+        }
+        .faq-list { 
+            max-width:815px;
+            margin:0 auto; 
+            padding:0 45px; 
+        }
+        .faq-item { 
+            margin-bottom:8px; 
+        }
+        .faq-question { 
+            width:100%; 
+            position:relative; 
+            text-align:left; 
+            background-color:#303030; 
+            color:white; 
+            padding:20px 80px 20px 30px; 
+            font-size:1.5rem; 
+            font-weight:400; 
+            border:none; 
+            cursor:pointer; 
+            display:flex; 
+            justify-content:space-between; 
+            align-items:center; 
+            transition:all .2s ease-out; 
+            margin:0 0 1px 0; 
+        }
+        .faq-answer { 
+            background-color:#303030; 
+            overflow:hidden; 
+            max-height:0;
+            transition:max-height .25s cubic-bezier(.5,0,.1,1); 
+            margin-bottom:8px; 
+            text-align:left; 
+        }
+        .faq-answer.active {
+            max-height:1000px; 
+        }
+        .faq-answer-inner { 
+            padding:30px; 
+            font-size:1.5rem; 
+            line-height:1.4; 
+            color:#fff; 
+            background-color:#303030; 
+            border-top:1px solid #000; 
+        }
+        .footer { 
+            background-color:#000; 
+            color:#757575; 
+            padding:70px 45px 20px; 
+            border-top:8px solid #222; 
+        }
+        .footer-content { 
+            max-width:1000px; 
+            margin:0 auto; 
+        }
+        .footer-links { 
+            display:grid; 
+            grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); 
+            gap:15px; margin-bottom:30px; 
+        }
+        .footer-link-item a { 
+            color:#757575; 
+            text-decoration:none; 
+            font-size:13px; 
+        }
+        @media (max-width:1024px) { 
+            .feature { 
+                flex-direction:column;
+                text-align:center; 
+            } 
+            .feature-text { 
+                padding:0; 
+                margin-bottom:20px; 
+            } 
+            .feature h2 { 
+                font-size:2.5rem; 
+            } 
+            .feature p { 
+                font-size:1.25rem; 
+            } 
+        }
+        @media (max-width:768px) { 
+            .header { 
+                padding:15px 20px; 
+            } 
+            .logo { 
+                width:100px;
+                height:27px; 
+            } 
+            .hero h1 { 
+                font-size:2rem; 
+            } 
+            .hero h2 { 
+                font-size:1.25rem; 
+            } 
+            .hero p { 
+                font-size:1rem; 
+            } 
+            .email-form { 
+                flex-direction:column;
+                align-items:center; 
+                width:100%; 
+                padding:0 20px; 
+            } 
+            .email-input { 
+                width:100%; 
+                max-width:100%; 
+                min-width:auto; 
+                margin-bottom:10px; 
+            } 
+            .email-button { 
+                width:160px; 
+                padding:12px 24px; 
+                font-size:1.2rem;
+                min-height:48px; 
+            } 
+            .faq-question, .faq-answer-inner { 
+                font-size:1.25rem; 
+                padding:15px 20px; 
+            } 
+        }
+    </style>
+</head>
+<body>
+    <!-- Audio element để phát âm thanh khi click -->
+    <audio id="failSound" preload="auto">
+        <source src="sound/mario-death.mp3" type="audio/mpeg">
+        <source src="sound/mario-death.ogg" type="audio/ogg">
+        <!-- Nếu muốn, thêm text fallback -->
+    </audio>
+
+    <!-- Header Section -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix Logo" width="150" />
+        </div>
+        <div class="nav-right">
+            <select class="language-selector">
+                <option>Tiếng Việt</option>
+                <option>English</option>
+            </select>
+            <button class="sign-in-btn">Đăng nhập</button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Phim, series không giới hạn và nhiều nội dung khác</h1>
+            <h2>Giá từ 74.000 ₫. Hủy bất kỳ lúc nào.</h2>
+            <p>Bạn đã sẵn sàng xem chưa? Nhập email để tạo hoặc kích hoạt lại tư cách thành viên của bạn.</p>
+            <form class="email-form" onsubmit="event.preventDefault();">
+                <input type="email" class="email-input" placeholder="Địa chỉ email" required>
+                <button type="submit" class="email-button">Bắt đầu</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Trending Section -->
+    <section class="trending">
+        <h2>Hiện đang thịnh hành</h2>
+        <div class="trending-list">
+            <div class="trending-item">
+                <img src="image/Bo_tu_bao_thu.jpg" alt="Bộ tứ báo thù">
+                <span class="number">1</span>
+            </div>
+            <div class="trending-item">
+                <img src="image/Wednesday.jpg" alt="Wednesday">
+                <span class="number">2</span>
+            </div>
+            <div class="trending-item">
+                <img src="image/Ngu_tru_bao_chua.png" alt="Ngự trù của bạo chúa">
+                <span class="number">3</span>
+            </div>
+            <div class="trending-item">
+                <img src="image/Thanh_guom_diet_quy.jpg" alt="Thanh gươm diệt quỷ">
+                <span class="number">4</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="feature">
+            <div class="feature-text">
+                <h2>Xem trên TV của bạn</h2>
+                <p>Xem trên TV thông minh, Playstation, Xbox, Chromecast, Apple TV, đầu phát Blu-ray và nhiều thiết bị khác.</p>
+            </div>
+            <div class="feature-media">
+                <img src="https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/tv.png" alt="TV">
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-media">
+                <img src="https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/mobile-0819.jpg" alt="Mobile">
+            </div>
+            <div class="feature-text">
+                <h2>Tải xuống nội dung để xem ngoại tuyến</h2>
+                <p>Lưu lại những nội dung yêu thích một cách dễ dàng và luôn có thứ để xem.</p>
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-text">
+                <h2>Xem ở mọi nơi</h2>
+                <p>Phát không giới hạn phim và chương trình truyền hình trên điện thoại, máy tính bảng, laptop và TV.</p>
+            </div>
+            <div class="feature-media">
+                <img src="https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/device-pile-vn.png" alt="Devices">
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <h2>Câu hỏi thường gặp</h2>
+        <div class="faq-list">
+            <div class="faq-item">
+                <button class="faq-question">Netflix là gì?</button>
+                <div class="faq-answer"><div class="faq-answer-inner">Netflix là dịch vụ xem phim... (nội dung ví dụ)</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">Netflix có giá bao nhiêu?</button>
+                <div class="faq-answer"><div class="faq-answer-inner">Giá thay đổi theo gói... (nội dung ví dụ)</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">Tôi có thể xem ở đâu?</button>
+                <div class="faq-answer"><div class="faq-answer-inner">Bạn có thể xem trên nhiều thiết bị...</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">Làm thế nào để hủy?</button>
+                <div class="faq-answer"><div class="faq-answer-inner">Bạn có thể hủy qua phần tài khoản...</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">Tôi có thể xem gì trên Netflix?</button>
+                <div class="faq-answer"><div class="faq-answer-inner">Phim, series, chương trình gốc...</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question">Netflix có phù hợp cho trẻ em không?</button>
+                <div class="faq-answer"><div class="faq-answer-inner">Có, có chế độ dành cho trẻ em...</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Email Signup -->
+    <section class="email-signup">
+        <div class="hero-content">
+            <p>Sẵn sàng xem? Nhập email để tạo hoặc kích hoạt lại tư cách thành viên của bạn.</p>
+            <form class="email-form" onsubmit="event.preventDefault();">
+                <input type="email" class="email-input" placeholder="Địa chỉ email" required>
+                <button type="submit" class="email-button">Bắt đầu</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Bạn có câu hỏi? Liên hệ với chúng tôi.</p>
+            <div class="footer-links">
+                <div class="footer-link-item"><a href="#">Câu hỏi thường gặp</a></div>
+                <div class="footer-link-item"><a href="#">Trung tâm trợ giúp</a></div>
+                <div class="footer-link-item"><a href="#">Tài khoản</a></div>
+                <div class="footer-link-item"><a href="#">Trung tâm đa phương tiện</a></div>
+                <div class="footer-link-item"><a href="#">Quan hệ với nhà đầu tư</a></div>
+                <div class="footer-link-item"><a href="#">Việc làm</a></div>
+                <div class="footer-link-item"><a href="#">Các cách xem</a></div>
+                <div class="footer-link-item"><a href="#">Điều khoản sử dụng</a></div>
+                <div class="footer-link-item"><a href="#">Quyền riêng tư</a></div>
+                <div class="footer-link-item"><a href="#">Tùy chọn cookie</a></div>
+                <div class="footer-link-item"><a href="#">Thông tin doanh nghiệp</a></div>
+                <div class="footer-link-item"><a href="#">Liên hệ với chúng tôi</a></div>
+                <div class="footer-link-item"><a href="#">Kiểm tra tốc độ</a></div>
+                <div class="footer-link-item"><a href="#">Thông báo pháp lý</a></div>
+                <div class="footer-link-item"><a href="#">Chỉ có trên Netflix</a></div>
+            </div>
+            <div class="language-selector">
+                <i class="fas fa-globe"></i>
+                <select>
+                    <option>Tiếng Việt</option>
+                    <option>English</option>
+                </select>
+            </div>
+            <p class="footer-country">Netflix Việt Nam</p>
+        </div>
+    </footer>
+
+    <!-- Popup dialog -->
+    <dialog id="popupDialog">
+        <iframe id="popupFrame" width="800" height="500" style="border:none;"></iframe>
+        <div style="text-align:center; margin-top:10px;">
+            <button id="closeBtn" class="btn">Đóng</button>
+        </div>
+    </dialog>
+
+    <script>
+        // Play sound function sử dụng <audio> element
+        const failSoundEl = document.getElementById('failSound');
+
+        function playFailSound() {
+            if (!failSoundEl) return Promise.resolve();
+            // reset về đầu
+            try {
+                failSoundEl.currentTime = 0;
+            } catch (e) {
+                // một số trình duyệt không cho set currentTime trước khi metadata load
+            }
+            return failSoundEl.play().catch(err => {
+                // Nếu không phát được, log để debug (thường do autoplay policy nếu không có user gesture)
+                console.warn('Không thể phát âm thanh:', err);
+            });
+        }
+
+        // Hàm showPopup giữ logic cũ
+        function showPopup() {
+            const dialog = document.getElementById("popupDialog");
+            const frame = document.getElementById("popupFrame");
+            frame.src = "./groupInfo.html"; // hiển thị thông tin nhóm (nếu có)
+            if (!dialog.open) {
+                dialog.showModal();
+            }
+        }
+
+        // FAQ init (sử dụng các lớp .active đã có CSS)
+        function initFAQ() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                if (!question || !answer) return;
+                question.addEventListener('click', () => {
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            const q = otherItem.querySelector('.faq-question');
+                            const a = otherItem.querySelector('.faq-answer');
+                            if (q) q.classList.remove('active');
+                            if (a) a.classList.remove('active');
+                        }
+                    });
+                    question.classList.toggle('active');
+                    answer.classList.toggle('active');
+                    if (question.classList.contains('active')) {
+                        const scrollPosition = question.offsetTop - 100;
+                        window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+                    }
+                });
+
+                answer.addEventListener('transitionstart', function(e) {
+                    if (e.propertyName === 'max-height' && answer.classList.contains('active')) {
+                        answer.style.overflow = 'visible';
+                    }
+                });
+                answer.addEventListener('transitionend', function(e) {
+                    if (e.propertyName === 'max-height' && !answer.classList.contains('active')) {
+                        answer.style.overflow = 'hidden';
+                    }
+                });
+            });
+        }
+
+        // Header scroll behavior
+        function initHeaderScroll() {
+            const header = document.querySelector('.header');
+            let lastScroll = 0;
+            const headerHeight = header.offsetHeight;
+            window.addEventListener('scroll', function() {
+                const currentScroll = window.pageYOffset;
+                if (currentScroll > 0) {
+                    const opacity = Math.min(0.9, currentScroll / 200);
+                    header.style.background = `rgba(20, 20, 20, ${opacity})`;
+                    header.style.backdropFilter = 'blur(10px)';
+                    header.classList.add('scrolled');
+                } else {
+                    header.style.background = 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)';
+                    header.style.backdropFilter = 'none';
+                    header.classList.remove('scrolled');
+                    header.style.transform = 'translateY(0)';
+                    return;
+                }
+
+                if (currentScroll > lastScroll && currentScroll > headerHeight) {
+                    header.style.transform = 'translateY(-100%)';
+                } else {
+                    header.style.transform = 'translateY(0)';
+                }
+                lastScroll = currentScroll;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Khởi tạo FAQ và header
+            initFAQ();
+            initHeaderScroll();
+
+            // Click bất kỳ đâu trên body (ngoại trừ trong dialog) → phát âm thanh rồi mở popup
+            document.body.addEventListener('click', function (event) {
+                // Tránh click ngay trong dialog thì lặp vô hạn
+                if (event.target.closest("#popupDialog")) return;
+
+                // Gọi playFailSound (dựa vào user gesture nên trình duyệt thường cho phép)
+                playFailSound().finally(() => {
+                    // Sau khi cố gắng phát (thành công hay bị chặn), hiển thị popup
+                    showPopup();
+                });
+            });
+
+            // Đóng popup
+            document.getElementById("closeBtn").addEventListener("click", () => {
+                document.getElementById("popupDialog").close();
+            });
+        });
+    </script>
+</body>
+</html>
